@@ -1,0 +1,195 @@
+---
+title: "Chitral Patil HW2: 3.6 Lab - Linear Regression"
+author: "Chitral Patil"
+date: "2022-09-27"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library(MASS) 
+library(ISLR2)
+```
+
+```{r}
+head(Boston)
+
+```
+
+```{r}
+lm.fit <- lm(medv ~ lstat, data = Boston) 
+attach(Boston)
+lm.fit <- lm(medv ~ lstat)
+
+```
+
+```{r}
+lm.fit
+
+```
+
+```{r}
+
+lm(formula = medv ~ lstat)
+```
+
+```{r}
+summary(lm.fit)
+
+```
+
+```{r}
+names(lm.fit)
+
+```
+
+```{r}
+coef(lm.fit)
+```
+
+```{r}
+confint(lm.fit)
+
+```
+
+```{r}
+predict(lm.fit, data.frame(lstat = (c(5, 10, 15))), interval = "confidence")
+
+```
+
+```{r}
+predict(lm.fit, data.frame(lstat = (c(5, 10, 15))),
+interval = "prediction")
+
+```
+
+```{r}
+plot(lstat, medv)
+abline(lm.fit)
+
+```
+
+```{r}
+plot(lstat, medv)
+abline(lm.fit) 
+
+abline(lm.fit, lwd = 3)
+abline(lm.fit, lwd = 3, col = "red")
+plot(lstat, medv, col = "red")
+plot(lstat, medv, pch = 20)
+plot(lstat, medv, pch = "+")
+plot(1:20, 1:20, pch = 1:20)
+
+
+```
+
+```{r}
+par(mfrow = c(2, 2)) 
+plot(lm.fit)
+
+```
+
+```{r}
+plot(predict(lm.fit), residuals(lm.fit)) 
+plot(predict(lm.fit), rstudent(lm.fit))
+
+```
+
+```{r}
+plot(hatvalues(lm.fit))
+which.max(hatvalues(lm.fit))
+
+```
+
+```{r}
+lm.fit <- lm(medv ~ lstat + age, data = Boston)
+summary(lm.fit)
+
+
+```
+
+```{r}
+lm.fit <- lm(medv ~ ., data = Boston) 
+summary(lm.fit)
+
+```
+
+```{r}
+library(car)
+vif(lm.fit)
+
+```
+
+```{r}
+lm.fit1 <- lm(medv ~ . - age, data = Boston) 
+summary(lm.fit1)
+
+```
+
+```{r}
+lm.fit1 <- update(lm.fit, ~ . - age)
+
+```
+
+```{r}
+
+summary(lm(medv ~ lstat * age, data = Boston))
+```
+
+```{r}
+lm.fit2 <- lm(medv ~ lstat + I(lstat^2)) 
+summary(lm.fit2)
+
+```
+
+```{r}
+lm.fit <- lm(medv ~ lstat)
+anova(lm.fit, lm.fit2)
+
+```
+
+```{r}
+par(mfrow = c(2, 2)) 
+plot(lm.fit2)
+
+```
+
+```{r}
+lm.fit5 <- lm(medv ~ poly(lstat, 5)) 
+summary(lm.fit5)
+ 
+```
+
+```{r}
+summary(lm(medv~log(rm), data = Boston))
+
+```
+
+```{r}
+head(Carseats)
+
+```
+
+```{r}
+lm.fit <- lm(Sales ~ . + Income:Advertising + Price:Age, data = Carseats)
+summary(lm.fit)
+
+```
+
+```{r}
+attach(Carseats)
+contrasts(ShelveLoc)
+
+```
+
+```{r}
+LoadLibraries <- function() { 
+  
+  library(ISLR2)
+  library(MASS)
+  print("The libraries have been loaded.") 
+ }
+
+```
+

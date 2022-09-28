@@ -1,0 +1,335 @@
+---
+title: "Chitral Patil HW2: Q8, Q9, Q13, Q14"
+author: "Chitral Patil"
+date: "2022-09-27"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+##### Q8
+
+(a) 
+```{r}
+
+library(ISLR)
+data(Auto)
+fit <- lm(mpg ~ horsepower, data = Auto)
+summary(fit)
+```
+
+(i) The p-value corresponding to the F-statistic equals 7.03198910\^{-81}. This means that there is a strong indication of a correlation between mpg and horsepower.
+```{r}
+cor.test(Auto$mpg, Auto$horsepower)
+```
+(ii) Calculating the correlation will help us determine the strength in the relationship between the predictor and the response. Thus, looking at our result, we do see a very strong inverse relationship between them where the magnitude of our answer indicates the strength. 0.77 is very strong and is one of the many good signs for us to proceed with the regression model.
+```{r}
+library(tidyverse)
+ggplot(Auto, aes(x = mpg, y = horsepower)) +
+   geom_point() +
+   labs(title = "mpg vs horsepower - Scatterplot")
+```
+
+Here a scatter plot would really be helpful while visualizing the data and one may directly look at it and answer the questions by the forehead test. Although not always the best, this is a really good starting point and a way to get a mental image of the data that we'll be working with, helping us to construe the relationship in a different manner.
+
+(iii) As discussed in the previous answer, the relationship between the predictor and the response can be determined by simply looking at the output of our correlation function on both the features (horsepower and mpg). The result is a negative number and this suggests that the relationship is negative.
+
+(iv) 
+```{r}
+predict(fit, data.frame(horsepower = 98), interval = "confidence")
+predict(fit, data.frame(horsepower = 98), interval = "prediction")
+
+```
+
+(b) 
+```{r}
+plot(Auto$horsepower, Auto$mpg, main = "mpg vs. horsepower [scatter plot]", xlab = "horsepower", ylab = "mpg", col = "grey")
+abline(fit, col = "orange")
+
+```
+
+(c) 
+```{r}
+par(mfrow = c(2, 2))
+plot(fit)
+
+```
+
+Here, residuals versus fitted values directly show us that the data isn't linear. Moreover, we can detect some outliers and high leverage points by looking at the standardized residuals versus leverage plot.
+
+------------------------------------------------------------------------
+
+##### Q9]
+
+(a) Following is a scatter plot matrix which includes all of the variables in the data set.
+```{r}
+pairs(Auto)
+
+```
+
+(b) Following is the correlation matrix, which excludes the name variable as it is qualitative unlike rest of the features in the dataset.
+```{r}
+names(Auto)
+
+```
+```{r}
+cor(Auto[1:8])
+
+```
+
+(c) (i)
+```{r}
+fit2 <- lm(mpg ~ . - name, data = Auto)
+summary(fit2)
+
+```
+
+The p-value corresponding to the F-statistic equals 2.037105910\^{-139}. This means that there is a strong indication of a correlation between mpg and rest of the predictors (features). Again we can answer this question with a more visually pleasing approach that is naive but still very good while communicating our findings. This approach is nothing if not taking the correlation between the features of our interest.
+
+(ii) Looking at the p-values associated with each predictor's t-statistic we conclude that all predictors show statistically significant relationship to the response but cylinders, horsepower and acceleration.
+
+(iii) According to the "year" variable's coefficient, an increase of one year results in an average increase in "mpg" of 0.7507727, not to mention that we are assuming that all other predictors are remaining constant. To put it another way, vehicles improve their fuel efficiency by almost 1 mpg year.
+
+
+
+(d)
+```{r}
+par(mfrow = c(2, 2))
+plot(fit2)
+
+```
+Looking at the residuals vs fitted values plot, we can construe a non-linear trend. Furthermore, looking at standardized residuals vs leverage, I spot a high leverage point (14) and few outliers.
+
+(e) 
+```{r}
+fit3 <- lm(mpg ~ cylinders * displacement+displacement * weight, data = Auto[, 1:8])
+summary(fit3)
+
+```
+Interaction between displacement and weight appears to be statistically significant.
+
+(f) Out of all the transformations, the log transformation best molds the data in a linear form.
+```{r}
+par(mfrow = c(2, 2))
+plot(log(Auto$horsepower), Auto$mpg)
+plot(sqrt(Auto$horsepower), Auto$mpg)
+plot((Auto$horsepower)^2, Auto$mpg)
+
+```
+
+------------------------------------------------------------------------
+
+##### Q13]
+
+(a)
+```{r}
+set.seed(1)
+x <- rnorm(100)
+
+```
+
+(b)
+```{r}
+eps <- rnorm(100, sd = sqrt(0.25))
+
+```
+
+(c)
+```{r}
+y <- -1 + 0.5 * x + eps
+length(y)
+
+```
+
+(d)
+```{r}
+plot(x, y)
+```
+
+It looks fairly linear but I do see some noise because of eps
+
+(e)
+```{r}
+fit_lslm <- lm(y ~ x)
+summary(fit_lslm)
+
+```
+
+Looking at the p value and the f statistics, the null hypothesis can be safely discarded for two reasons. Firstly, because of very small p value and secondly, because of the high f statistics. Moreover, our predicted values β̂0 and β̂1 are very close to the true values β0 and β1.
+
+(f)
+```{r}
+plot(x, y)
+abline(fit_lslm, col = "orange")
+abline(-1, 0.5, col = "red")
+legend("bottomright", c("Least Squares Line", "Regression Line"), col = c("orange", "red"), lty = c(1, 1))
+```
+(g)
+```{r}
+fit_prm <- lm(y ~ x + I(x^2))
+summary(fit_prm)
+
+```
+I see R^2 has slightly increased along with a slight decrease in RSE when compared to our linear model. However, the p-value for x^2 is greater than 0.05 which makes it insignificant. Thus, we don't have enough evidence to conclude that the quadratic term has a positive effect on the model fit and as our contention doesn't hold water. 
+
+(h)
+```{r}
+set.seed(1)
+eps <- rnorm(100, sd = 0.125)
+x <- rnorm(100)
+y <- -1 + 0.5 * x + eps
+plot(x, y)
+fit_modified <- lm(y ~ x)
+summary(fit_modified)
+
+```
+
+```{r}
+plot(x,y)
+abline(fit_modified, col = "orange")
+abline(-1, 0.5, col = "purple")
+legend("bottomright", c("Least Squares Line ", "Regression Line"), col = c("orange", "purple"), lty = c(1, 1))
+```
+By lowering the variance of the normal distribution used to produce the error component, we were able to minimize the noise. Although the coefficients haven't been changed much when compared to the previous case, the relationship has become very linear. In face, we have very high R^2 and very low RSE. Furthermore, because of very low noise, we could see both the lines overlap. 
+
+
+(i)
+```{r}
+set.seed(1)
+eps <- rnorm(100, sd = 0.5)
+x <- rnorm(100)
+y <- -1 + 0.5 * x + eps
+plot(x, y)
+fit_mod_noise <- lm(y ~ x)
+summary(fit_mod_noise)
+
+```
+
+```{r}
+plot(x,y)
+abline(fit_mod_noise, col = "orange")
+abline(-1, 0.5, col = "purple")
+legend("bottomright", c("Least square", "Regression"), col = c("orange", "purple"), lty = c(1, 1))
+
+```
+Increasing variance did help us increase the noise. Admittedly, the coefficients haven't changed much than the previous case but the overlap between both of our lines has indeed reduced considerably since RSE has increased and R^2 has dropped. 
+
+(j)
+```{r}
+confint(fit_lslm)
+
+```
+
+```{r}
+
+confint(fit_modified)
+```
+
+```{r}
+
+confint(fit_mod_noise)
+```
+Width of the confidence interval is directly proportional to the noise. Thus, more noise makes it less predictable and less noise makes it more predictable. 
+
+---
+
+##### Q14]
+
+(a)
+```{r}
+set.seed(1)
+x1 <- runif(100)
+x2 <- 0.5 * x1 + rnorm(100)/10
+y <- 2 + 2 * x1 + 0.3 * x2 + rnorm(100)
+
+```
+Y=2+2(X1)+0.3(X2)+ ε is the form of the linear model with ε N(0,1) random variable and the regression coefficients are 2, 2, and 0.3 respectively. 
+
+(b)
+```{r}
+
+cor(x1, x2)
+```
+
+```{r}
+plot(x1, x2)
+
+```
+Here we get to see a very strong correlation. 
+
+(c)
+```{r}
+fit_lsr <- lm(y ~ x1 + x2)
+summary(fit_lsr)
+
+```
+Yes, we can reject the null hypothesis H0 : β1 = 0 because it has p value which is less than 0.05. 
+No, we can't reject the null hypothesis H0 : β2 = 0 because it has p value which is greater than 0.05. 
+
+(d)
+```{r}
+fit_lsr_x1 <- lm(y ~ x1)
+summary(fit_lsr_x1)
+
+```
+Yes, we can reject the null hypothesis H0 :β1 =0 because x1 is indeed significant with a low p value. 
+
+(e)
+```{r}
+fit_lsr_x2 <- lm(y ~ x2)
+summary(fit_lsr_x2)
+
+```
+Yes, we can reject the null hypothesis H0 :β1 =0 because x2 is indeed significant with a low p value. 
+
+(f) No, the results obtained in (c)–(e) don't contradict each other mainly because of the high correlation between them. In fact, it would've been confounding if the results were not the same since high correlation suggests that the result of our computation for both should be similar if not same (same in a very special case where the correlation is 1). Thus, this high correlation between our features is commonly addressed as the problem of collinearity. The problem precisely is about determining the impact of the individual feature as we are unable to easily find the appropriate weight of the feature who is contributing to the corresponding response. In fact, collinearity drops the accuracy of the estimates of our coefficients and we can't trust them blindly. In the case where our model had 2 predictors, the standard error for x1 was 0.7211795 and 1.1337225 for x2. However, in the other case x1 was 0.3962774 and x2 was 0.6330467. Thus, in presence of collinearity, the decision to reject H0 may be forestalled. In conclusion, the presence of collinearity masked the importance of x2. 
+
+
+(g)
+```{r}
+x1 <- c(x1, 0.1)
+x2 <- c(x2, 0.8)
+y <- c(y, 6)
+
+```
+
+```{r}
+fit_lsr <- lm(y ~ x1 + x2)
+fit_lsr_x1 <- lm(y ~ x1)
+fit_lsr_x2 <- lm(y ~ x2)
+
+```
+
+```{r}
+summary(fit_lsr)
+```
+
+```{r}
+summary(fit_lsr_x1)
+
+```
+
+```{r}
+summary(fit_lsr_x2)
+```
+
+```{r}
+plot(fit_lsr)
+
+```
+
+```{r}
+
+plot(fit_lsr_x1)
+```
+
+```{r}
+plot(fit_lsr_x2)
+
+```
+In the case where we had two predictors (fit_lsr), the last point is a high leverage point. 
+In the case where we had x1 as our only predictor (fit_lst_x1), the last point is an outlier. 
+In the case where we had x2 as our only predictor (fit_lst_x2), the last point is a high leverage point.
+
+end
